@@ -4,7 +4,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
@@ -12,16 +11,16 @@ jobs:
           distribution: 'adopt'
       - name: Clone Repo
         run: |
-          git clone https://github.com/vojtechhabarta/typescript-generator
+          git clone https://github.com/OpenHFT/Chronicle-Wire
       - name: Compile test module and dependencies
         run: | 
-          cd typescript-generator
-          mvn test-compile -pl typescript-generator-core -am
+          cd Chronicle-Wire
+          mvn test-compile -q --file pom.xml -am
       - name: Run test
         run: |
-          cd typescript-generator
-          mvn -pl typescript-generator-core test -Dtest=cz.habarta.typescript.generator.TaggedUnionsTest#testTaggedUnionsWithInterfaces
+          cd Chronicle-Wire
+          mvn --file pom.xml test -Dtest=net.openhft.chronicle.wire.TextWireTest#testABCDBytes
       - name: Run test with NonDex tool
         run: |
-          cd typescript-generator
-          mvn -pl typescript-generator-core edu.illinois:nondex-maven-plugin:1.1.2:nondex -Dtest=cz.habarta.typescript.generator.TaggedUnionsTest#testTaggedUnionsWithInterfaces -DnondexRuns=10
+          cd Chronicle-Wire
+          mvn --file pom.xml edu.illinois:nondex-maven-plugin:1.1.2:nondex -Dtest=net.openhft.chronicle.wire.TextWireTest#testABCDBytes -DnondexRuns=10
