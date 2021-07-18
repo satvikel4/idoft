@@ -1,0 +1,27 @@
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Clone Repo
+        run: |
+          git clone https://github.com/vojtechhabarta/typescript-generator
+      - name: Compile test module and dependencies
+        run: | 
+          cd typescript-generator
+          mvn test-compile -pl typescript-generator-core -am
+      - name: Run test
+        run: |
+          cd typescript-generator
+          mvn -pl typescript-generator-core test -Dtest=cz.habarta.typescript.generator.TaggedUnionsTest#testTaggedUnionsWithInterfaces
+      - name: Run test with NonDex tool
+        run: |
+          cd typescript-generator
+          mvn -pl typescript-generator-core edu.illinois:nondex-maven-plugin:1.1.2:nondex -Dtest=cz.habarta.typescript.generator.TaggedUnionsTest#testTaggedUnionsWithInterfaces -DnondexRuns=10
